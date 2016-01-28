@@ -1,21 +1,3 @@
-#
-# https://hub.docker.com/r/sdd330/alpine-oraclejdk7/~/dockerfile/
-# https://hub.docker.com/r/sdd330/alpine-tomcat-oraclejdk/
-#
-# No more JRE7
-# http://www.oracle.com/technetwork/java/javase/overview/index.html
-#
-# JRE8 for Geoserver?
-# http://osdir.com/ml/geoserver-development-geospatial-java/2015-01/msg00331.html
-#
-# Latest tomcat7
-# https://tomcat.apache.org/download-70.cgi
-#
-# Don't use tomcat8 until Geoserver is made compatible
-# http://stackoverflow.com/questions/30048947/should-i-upgrade-to-tomcat8-from-tomcat-7
-#
-# Include gosu like https://github.com/mendsley/docker-alpine-gosu/blob/master/Dockerfile
-#
 FROM alpine
 MAINTAINER Cheewai Lai <clai@csir.co.za>
 
@@ -87,7 +69,6 @@ RUN curl \
     | gunzip \
     | tar x -C /usr/ \
     && mv /usr/apache-tomcat* /usr/tomcat
-#CLAI	VOLUME /usr/tomcat/webapps
 # SET CATALINE_HOME and PATH
 ENV CATALINA_HOME /usr/tomcat
 ENV JMX false
@@ -100,7 +81,6 @@ ENV MINMEM 128m
 ENV MAXMEM 512m
 ENV PATH $PATH:$CATALINA_HOME/bin
 ADD setenv.sh $CATALINA_HOME/bin/
-#RUN chmod +x $CATALINA_HOME/bin/setenv.sh
 RUN adduser -s /bin/false -D -h $CATALINA_HOME -H -u 1000 tomcat \
  && chown -R tomcat $CATALINA_HOME/* \
  && chmod +x $CATALINA_HOME/bin/setenv.sh
