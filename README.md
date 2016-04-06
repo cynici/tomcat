@@ -17,6 +17,21 @@ My personal use-case is for running [Boundless](http://boundlessgeo.com/products
 
 Even though GeoServer has only been officially tested with JRE7, it seems to [work fine with JRE8](http://osdir.com/ml/geoserver-development-geospatial-java/2015-01/msg00331.html).
 
+## Usage
+
+To run tomcat as non-root user with specific numeric UID, write your own entrypoint script using *docker-entrypoint.sh* as example.
+
+```
+#! /bin/sh
+
+TOMCAT_UID="${TOMCAT_UID:-1000}"
+set -eux
+adduser -s /bin/false -D -h $CATALINA_HOME -H -u ${TOMCAT_UID} tomcat \
+ && chown -R tomcat $CATALINA_HOME/* \
+ && chmod +x $CATALINA_HOME/bin/setenv.sh
+gosu tomcat catalina.sh run
+```
+
 ## Notes
 
 - Environment variables JAVA\_\* are hardcoded to enable non-interactive download from Oracle web site. You figure out these values manually by visiting http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html and update them accordingly

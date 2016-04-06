@@ -42,12 +42,12 @@ ENV JAVA_VERSION=8 \
 
 RUN apk add --update wget bash curl ca-certificates && \
     cd /tmp && \
-    wget "https://circle-artifacts.com/gh/andyshinn/alpine-pkg-glibc/6/artifacts/0/home/ubuntu/alpine-pkg-glibc/packages/x86_64/glibc-2.21-r2.apk" \
+    wget --no-check-certificate "https://circle-artifacts.com/gh/andyshinn/alpine-pkg-glibc/6/artifacts/0/home/ubuntu/alpine-pkg-glibc/packages/x86_64/glibc-2.21-r2.apk" \
          "https://circle-artifacts.com/gh/andyshinn/alpine-pkg-glibc/6/artifacts/0/home/ubuntu/alpine-pkg-glibc/packages/x86_64/glibc-bin-2.21-r2.apk" && \
     apk add --allow-untrusted glibc-2.21-r2.apk glibc-bin-2.21-r2.apk && \
     /usr/glibc/usr/bin/ldconfig /lib /usr/glibc/usr/lib && \
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
-    wget --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
+    wget --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
         "http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_UPDATE}-b${JAVA_BUILD}/jdk-${JAVA_VERSION}u${JAVA_UPDATE}-linux-x64.tar.gz" && \
     tar xzf "jdk-${JAVA_VERSION}u${JAVA_UPDATE}-linux-x64.tar.gz" && \
     mkdir -p /usr/lib/jvm && \
@@ -81,8 +81,5 @@ ENV MINMEM 128m
 ENV MAXMEM 512m
 ENV PATH $PATH:$CATALINA_HOME/bin
 ADD setenv.sh $CATALINA_HOME/bin/
-RUN adduser -s /bin/false -D -h $CATALINA_HOME -H -u 1000 tomcat \
- && chown -R tomcat $CATALINA_HOME/* \
- && chmod +x $CATALINA_HOME/bin/setenv.sh
-EXPOSE 8080 9004 8000
-CMD ["gosu", "tomcat", "catalina.sh", "run"]
+ADD docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT /docker-entrypoint.sh
