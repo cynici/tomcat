@@ -25,16 +25,16 @@ RUN buildDeps='curl gnupg' HOME='/root' \
         && apk del --purge $buildDeps \
 	&& rm -rf /root/.gnupg
 
-ENV JAVA_VERSION=7 \
-    JAVA_UPDATE=80 \
-    JAVA_BUILD=15 \
-    JAVA_HOME=/usr/lib/jvm/default-jvm
-
+#ARG JAVA_VERSION=7
+#ARG JAVA_UPDATE=80
+#ARG JAVA_BUILD=15
 # Figure out these values manually by visiting http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
-ENV JAVA_VERSION=8 \
-    JAVA_UPDATE=72 \
-    JAVA_BUILD=15 \
-    JAVA_HOME=/usr/lib/jvm/default-jvm
+ARG JAVA_VERSION=8
+ARG JAVA_UPDATE=72
+ARG JAVA_BUILD=15
+
+ENV JAVA_HOME=/usr/lib/jvm/default-jvm
+
 
 # Here we use several hacks collected from https://github.com/gliderlabs/docker-alpine/issues/11:
 # 1. install GLibc (which is not the cleanest solution at all)
