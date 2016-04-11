@@ -19,7 +19,17 @@ Even though GeoServer has only been officially tested with JRE7, it seems to [wo
 
 ## Usage
 
-To run tomcat as non-root user with specific numeric UID, write your own entrypoint script using *docker-entrypoint.sh* as example.
+Tomcat webapps directory in the container is */usr/tomcat/webapps/*
+
+To enable strong cryptography in Oracle JRE, extract *local_policy.jar* and *US_export_policy.jar* from http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip
+
+```
+volumes:
+- local_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/local_policy.jar
+- US_export_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/US_export_policy.jar
+```
+
+To run tomcat as non-root user with specific numeric UID, write your own entrypoint script using *docker-entrypoint.sh* as example and set the environment variable *TOMCAT_UID*
 
 ```
 #! /bin/sh
@@ -32,21 +42,15 @@ adduser -s /bin/false -D -h $CATALINA_HOME -H -u ${TOMCAT_UID} tomcat \
 gosu tomcat catalina.sh run
 ```
 
-## Notes
-
-- Environment variables JAVA\_\* are hardcoded to enable non-interactive download from Oracle web site. You figure out these values manually by visiting http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html and update them accordingly
-
-- Environment variable TOMCAT\_VERSION is determined from https://tomcat.apache.org/download-70.cgi
-
-- *catalina.sh* honors environment variable JAVA\_OPTS so you can tuning the JVM by passing it when launching the container
+Override any JRE JAVA [default values](https://github.com/cynici/tomcat/blob/master/Dockerfile) using *environment* in docker-compose.yml file. GeoServer requires MINMEM greater or equal to 64 MB.
 
 ```
-JAVA_OPTS="-Djava.awt.headless=true -Xmx2048m -Xms512m 
--XX:SoftRefLRUPolicyMSPerMB=36000 -XX:+UseParallelGC 
--DADVANCED_PROJECTION_HANDLING=true -DUSE_STREAMING_RENDERER=true"
+environment:
+  MAXMEM: 1024m
+  MINMEM: 64m
 ```
 
-- Specifically for GeoServer, persist it data outside the container:
+Specifically to persist GeoServer data, set its data directory to a separate directory in the container and mount it using *volumes* in docker-compose.yml
 
 ```
 GEOSERVER_DATA_DIR=/var/geoserver
