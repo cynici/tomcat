@@ -39,7 +39,7 @@ set -eux
 adduser -s /bin/false -D -h $CATALINA_HOME -H -u ${TOMCAT_UID} tomcat \
  && chown -R tomcat $CATALINA_HOME/* \
  && chmod +x $CATALINA_HOME/bin/setenv.sh
-gosu tomcat catalina.sh run
+exec gosu tomcat catalina.sh run
 ```
 
 Override any JRE JAVA [default values](https://github.com/cynici/tomcat/blob/master/Dockerfile) using *environment* in docker-compose.yml file. GeoServer requires MINMEM greater or equal to 64 MB.
