@@ -1,9 +1,9 @@
 FROM frolvlad/alpine-oraclejdk8:latest
 MAINTAINER Cheewai Lai <clai@csir.co.za>
 
-ARG GOSU_VERSION=1.9
+ARG GOSU_VERSION=1.10
 ARG GOSU_DOWNLOAD_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
-ARG TOMCAT_VERSION=7.0.70
+ARG TOMCAT_VERSION=8.5.6
 
 # Download and install gosu
 #   https://github.com/tianon/gosu/releases
@@ -13,7 +13,7 @@ RUN buildDeps='curl' HOME='/root' \
  && curl -o gosu -fsSL "$GOSU_DOWNLOAD_URL" > gosu-amd64 \
  && mv gosu /usr/bin/gosu \
  && chmod +x /usr/bin/gosu \
- && curl --silent --location --retry 3 --cacert /etc/ssl/certs/ca-certificates.crt "https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" \
+ && curl --silent --location --retry 3 --cacert /etc/ssl/certs/ca-certificates.crt "https://archive.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" \
     | gunzip \
     | tar x -C /usr/ \
  && mv /usr/apache-tomcat* /usr/tomcat \

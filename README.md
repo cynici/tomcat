@@ -2,7 +2,7 @@
 
 Use this repo to build a small footprint docker image containing the following based on [alpine linux](https://hub.docker.com/_/alpine/):
 
-- Tomcat 7
+- Tomcat (versions tested compatible with Geoserver)
 - Oracle JDK 8
 - gosu
 
