@@ -55,3 +55,79 @@ Specifically to persist GeoServer data, set its data directory to a separate dir
 ```
 GEOSERVER_DATA_DIR=/var/geoserver
 ```
+
+A complete sample `docker-compose.yml` may look like this:
+
+```
+geoserver:
+  image: cheewai/tomcat
+  environment:
+  - TOMCAT_UID=1001
+  - MAXMEM=2048m
+  - GEOSERVER_DATA_DIR=/var/geoserver
+  volumes:
+  - ./downloads/local_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/local_policy.jar
+  - ./downloads/US_export_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/US_export_policy.jar
+  - ./webapps:/usr/tomcat/webapps
+  - ./gsdata:/var/geoserver
+  - ./setenv.sh:/usr/tomcat/bin/setenv.sh:ro
+  ports:
+  - "8080:8080"
+```
+
+## Download script
+
+GeoSolution provides well-tested snapshots of stable release on a daily basis that includes the latest bug fixes.
+
+With a little customization, this download script can be used fetch the Geoserver and any additional plugin that you require.
+
+```
+#! /bin/bash
+
+set -eux
+DLDIR=${DLDIR:-downloads}
+VER="${VER:-2.9.x}"
+GSVER="${GSVER:-geoserver-2.9}"
+BASE_URL="http://ares.boundlessgeo.com/geoserver/$VER"
+pushd $DLDIR || {
+  echo "Set download directory DLDIR to an existing directory" >&2
+  exit 1
+}
+wget --timestamping "${BASE_URL}/geoserver-${VER}-latest-war.zip"
+for p in cas feature-pregeneralized imagemosaic-jdbc monitor mysql pyramid wps ; do
+  wget --timestamping "${BASE_URL}/ext-latest/${GSVER}-SNAPSHOT-${p}-plugin.zip"
+done
+popd
+```
+
+### Initial setup script
+
+This script is to unpack a specific version of Geoserver and any plugin already present in the download directory *DLDIR* into the Tomcat *webapps* directory.
+
+```
+#! /bin/sh
+
+[ $# -eq 1 ] || {
+  echo "usage: $0 {geoserver_webapps_dir}" >&2
+  exit 1
+}
+APPDIR=$(readlink -f "$1")
+set -eux
+DLDIR=${DLDIR:-downloads}
+VER="${VER:-2.9.x}"
+GSVER="${GSVER:-geoserver-2.9}"
+
+unzip -d $APPDIR "$DLDIR/geoserver-${VER}-latest-war.zip" geoserver.war
+[ -d "$APPDIR/geoserver" ] && rm -f "$APPDIR/geoserver"
+
+# Unarchive geoserver.war
+docker run -it --rm -e TOMCAT_UID=1001 --entrypoint=/bin/sh -v $APPDIR:/usr/tomcat/webapps cheewai/tomcat -c "mkdir /usr/tomcat/webapps/geoserver; cd /usr/tomcat/webapps/geoserver && /usr/lib/jvm/default-jvm/bin/jar -xvf ../geoserver.war"
+docker run -it --rm -e TOMCAT_UID=1001 --entrypoint=/bin/sh -v $APPDIR:/usr/tomcat/webapps cheewai/tomcat -c "chmod -R ugo+rw /usr/tomcat/webapps/geoserver"
+
+# Unzip extensions
+for f in ${DLDIR}/${GSVER}-*-plugin.zip ; do
+  unzip -o -d $APPDIR/geoserver/WEB-INF/lib "$f"
+done
+
+docker run -it --rm -e TOMCAT_UID=1001 -v $APPDIR:/usr/tomcat/webapps cheewai/tomcat
+```
