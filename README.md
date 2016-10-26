@@ -13,6 +13,8 @@ The Dockerfile is adapted from the following primarily because Oracle JDK 7 is [
 
 [gosu](https://github.com/tianon/gosu) has been included so that tomcat would run as non-root user for better security. The gosu stanza in the Dockerfile is based on [docker-alpine-gosu](https://github.com/mendsley/docker-alpine-gosu)
 
+[dockerize](https://github.com/jwilder/dockerize) may be used to wait for any dependent container (service) to be ready before starting Tomcat.
+
 My personal use-case is for running [Boundless](http://boundlessgeo.com/products/opengeo-suite/) GeoServer and GeoFence.
 
 Even though GeoServer has only been officially tested with JRE7, it seems to [work fine with JRE8](http://osdir.com/ml/geoserver-development-geospatial-java/2015-01/msg00331.html).
