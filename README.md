@@ -11,9 +11,9 @@ The Dockerfile is adapted from the following primarily because Oracle JDK 7 is [
 - https://hub.docker.com/r/sdd330/alpine-oraclejdk7/~/dockerfile/
 - https://hub.docker.com/r/sdd330/alpine-tomcat-oraclejdk/
 
-[gosu](https://github.com/tianon/gosu) has been included so that tomcat would run as non-root user for better security. The gosu stanza in the Dockerfile is based on [docker-alpine-gosu](https://github.com/mendsley/docker-alpine-gosu)
+[gosu](https://github.com/tianon/gosu) has been included so that tomcat would run as non-root user for better security. The gosu stanza in the Dockerfile is based on [docker-alpine-gosu](https://github.com/mendsley/docker-alpine-gosu). The docker image uses `/docker-entrypoint.sh` to run tomcat as non-root user. The numeric UID of this user in the container defaults to 1000 but it may be overridden with the environment variable *TOMCAT_UID*.
 
-[dockerize](https://github.com/jwilder/dockerize) may be used to wait for any dependent container (service) to be ready before starting Tomcat.
+[dockerize](https://github.com/jwilder/dockerize) may be used to wait for any dependent container (service) to be ready before starting Tomcat. To use it, define the environment variable *DOCKERIZE_CMD* with the full command, e.g. `dockerize -wait=tcp://my_postgresql_host_ip:5432 -timeout=30m`.
 
 My personal use-case is for running [Boundless](http://boundlessgeo.com/products/opengeo-suite/) GeoServer and GeoFence.
 
@@ -31,19 +31,6 @@ volumes:
 - US_export_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/US_export_policy.jar
 ```
 
-To run tomcat as non-root user with specific numeric UID, write your own entrypoint script using *docker-entrypoint.sh* as example and set the environment variable *TOMCAT_UID*
-
-```
-#! /bin/sh
-
-TOMCAT_UID="${TOMCAT_UID:-1000}"
-set -eux
-adduser -s /bin/false -D -h $CATALINA_HOME -H -u ${TOMCAT_UID} tomcat \
- && chown -R tomcat $CATALINA_HOME/* \
- && chmod +x $CATALINA_HOME/bin/setenv.sh
-exec gosu tomcat catalina.sh run
-```
-
 Override any JRE JAVA [default values](https://github.com/cynici/tomcat/blob/master/Dockerfile) using *environment* in docker-compose.yml file. GeoServer requires MINMEM greater or equal to 64 MB.
 
 ```
@@ -52,7 +39,7 @@ environment:
   MINMEM: 64m
 ```
 
-Specifically to persist GeoServer data, set its data directory to a separate directory in the container and mount it using *volumes* in docker-compose.yml
+To persist GeoServer data, set its data directory to a separate directory in the container and mount it using *volumes* in docker-compose.yml
 
 ```
 GEOSERVER_DATA_DIR=/var/geoserver
@@ -88,8 +75,8 @@ With a little customization, this download script can be used fetch the Geoserve
 
 set -eux
 DLDIR=${DLDIR:-downloads}
-VER="${VER:-2.9.x}"
-GSVER="${GSVER:-geoserver-2.9}"
+VER="${VER:-2.12.x}"
+GSVER="${GSVER:-geoserver-2.12}"
 BASE_URL="http://ares.boundlessgeo.com/geoserver/$VER"
 pushd $DLDIR || {
   echo "Set download directory DLDIR to an existing directory" >&2
@@ -116,8 +103,8 @@ This script is to unpack a specific version of Geoserver and any plugin already 
 APPDIR=$(readlink -f "$1")
 set -eux
 DLDIR=${DLDIR:-downloads}
-VER="${VER:-2.9.x}"
-GSVER="${GSVER:-geoserver-2.9}"
+VER="${VER:-2.12.x}"
+GSVER="${GSVER:-geoserver-2.12}"
 
 unzip -d $APPDIR "$DLDIR/geoserver-${VER}-latest-war.zip" geoserver.war
 [ -d "$APPDIR/geoserver" ] && rm -f "$APPDIR/geoserver"
