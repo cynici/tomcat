@@ -15,9 +15,8 @@ The Dockerfile is adapted from the following primarily because Oracle JDK 7 is [
 
 [dockerize](https://github.com/jwilder/dockerize) may be used to wait for any dependent container (service) to be ready before starting Tomcat. To use it, define the environment variable *DOCKERIZE_CMD* with the full command, e.g. `dockerize -wait=tcp://my_postgresql_host_ip:5432 -timeout=30m`.
 
-My personal use-case is for running [Boundless](http://boundlessgeo.com/products/opengeo-suite/) GeoServer and GeoFence.
+My personal use-case is for running [Boundless](http://boundlessgeo.com/products/opengeo-suite/) GeoServer and GeoFence so the [Java version](http://docs.geoserver.org/latest/en/user/production/java.html) must be compatible.
 
-Even though GeoServer has only been officially tested with JRE7, it seems to [work fine with JRE8](http://osdir.com/ml/geoserver-development-geospatial-java/2015-01/msg00331.html).
 
 ## Usage
 
