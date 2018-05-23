@@ -23,6 +23,9 @@ Even though GeoServer has only been officially tested with JRE7, it seems to [wo
 
 Tomcat webapps directory in the container is */usr/tomcat/webapps/*
 
+
+### Enable strong cryptography in JVM (recommended)
+
 To enable strong cryptography in Oracle JRE, extract *local_policy.jar* and *US_export_policy.jar* from http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip
 
 ```
@@ -30,6 +33,8 @@ volumes:
 - local_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/local_policy.jar
 - US_export_policy.jar:/usr/lib/jvm/default-jvm/jre/lib/security/US_export_policy.jar
 ```
+
+### Tune JVM
 
 Override any JRE JAVA [default values](https://github.com/cynici/tomcat/blob/master/Dockerfile) using *environment* in docker-compose.yml file. GeoServer requires MINMEM greater or equal to 64 MB.
 
@@ -39,13 +44,15 @@ environment:
   MINMEM: 64m
 ```
 
+### Persist Geoserver data
+
 To persist GeoServer data, set its data directory to a separate directory in the container and mount it using *volumes* in docker-compose.yml
 
 ```
 GEOSERVER_DATA_DIR=/var/geoserver
 ```
 
-A complete sample `docker-compose.yml` may look like this:
+### Sample docker-compose.yml
 
 ```
 geoserver:
@@ -77,7 +84,7 @@ set -eux
 DLDIR=${DLDIR:-downloads}
 VER="${VER:-2.12.x}"
 GSVER="${GSVER:-geoserver-2.12}"
-BASE_URL="http://ares.boundlessgeo.com/geoserver/$VER"
+BASE_URL="https://build.geoserver.org/geoserver/$VER"
 pushd $DLDIR || {
   echo "Set download directory DLDIR to an existing directory" >&2
   exit 1
