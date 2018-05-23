@@ -1,11 +1,11 @@
 FROM frolvlad/alpine-oraclejdk8:latest
 LABEL maintainer "Cheewai Lai <clai@csir.co.za>"
 
-ARG TOMCAT_VERSION=7.0.72
+ARG TOMCAT_VERSION=7.0.88
 
 ARG GOSU_VERSION=1.10
 ARG GOSU_DOWNLOAD_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
-ARG DOCKERIZE_VERSION=0.5.0
+ARG DOCKERIZE_VERSION=0.6.1
 ARG DOCKERIZE_DOWNLOAD_URL="https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz"
 
 # Download and install gosu

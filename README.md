@@ -25,7 +25,17 @@ Tomcat webapps directory in the container is */usr/tomcat/webapps/*
 
 ### Enable strong cryptography in JVM (recommended)
 
-To enable strong cryptography in Oracle JRE, extract *local_policy.jar* and *US_export_policy.jar* from http://download.oracle.com/otn-pub/java/jce/7/UnlimitedJCEPolicyJDK7.zip
+To enable strong cryptography in Oracle JRE:
+
+- Download JCE policy jar that matches the Java version, http://docs.geoserver.org/latest/en/user/production/java.html#oracle-java
+
+    - for Java 7, http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
+
+    - for Java 8, http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html
+
+- Extract *local_policy.jar* and *US_export_policy.jar* 
+
+- Mount each file as docker volume respectively i.e.
 
 ```
 volumes:
