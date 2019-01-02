@@ -1,7 +1,7 @@
 FROM frolvlad/alpine-oraclejdk8:latest
 LABEL maintainer "Cheewai Lai <clai@csir.co.za>"
 
-ARG TOMCAT_VERSION=7.0.88
+ARG TOMCAT_VERSION=7.0.92
 
 ARG GOSU_VERSION=1.10
 ARG GOSU_DOWNLOAD_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
