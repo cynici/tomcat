@@ -1,9 +1,12 @@
-FROM frolvlad/alpine-oraclejdk8:latest
-LABEL maintainer "Cheewai Lai <clai@csir.co.za>"
+FROM frolvlad/alpine-java:jdk8-slim
+# Don't use jre tag because it does not provide
+# /usr/lib/jvm/default-jvm/bin/java required/expected by
+# /usr/tomcat/bin/setclasspath.sh
+LABEL maintainer "Cheewai Lai <cheewai.lai@gmail.com>"
 
-ARG TOMCAT_VERSION=7.0.92
+ARG TOMCAT_VERSION=7.0.93
 
-ARG GOSU_VERSION=1.10
+ARG GOSU_VERSION=1.11
 ARG GOSU_DOWNLOAD_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
 ARG DOCKERIZE_VERSION=0.6.1
 ARG DOCKERIZE_DOWNLOAD_URL="https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz"
@@ -16,12 +19,15 @@ RUN buildDeps='curl' HOME='/root' \
  && curl -o gosu -fsSL "$GOSU_DOWNLOAD_URL" > gosu-amd64 \
  && mv gosu /usr/bin/gosu \
  && chmod +x /usr/bin/gosu \
- && curl -o tgz -fsSL $DOCKERIZE_DOWNLOAD_URL && tar -C /usr/local/bin -xzvf tgz \
- && rm tgz \
+ && curl -o /tmp/tgz -fsSL $DOCKERIZE_DOWNLOAD_URL && tar -C /usr/local/bin -xzvf /tmp/tgz \
+ && rm /tmp/tgz \
  && curl --silent --location --retry 3 --cacert /etc/ssl/certs/ca-certificates.crt "https://archive.apache.org/dist/tomcat/tomcat-7/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz" \
     | gunzip \
     | tar x -C /usr/ \
  && mv /usr/apache-tomcat* /usr/tomcat \
+ && curl -o /tmp/tgz -fsSL $DOCKERIZE_DOWNLOAD_URL \
+ && tar -C /usr/bin -xzvf /tmp/tgz \
+ && rm -f /tmp/tgz \
  && apk del --purge $buildDeps
 ENV JAVA_HOME=/usr/lib/jvm/default-jvm
 # SET CATALINE_HOME and PATH
