@@ -1,7 +1,7 @@
 #! /bin/sh
+set -ux
 TOMCAT_UID="${TOMCAT_UID:-1000}"
 DOCKERIZE_CMD="${DOCKERIZE_CMD:-}"
-set -u
 # Refer to busybox 'adduser' manpage for details
 adduser -s /bin/false -D -h $CATALINA_HOME -H -u ${TOMCAT_UID} tomcat
 chown -R tomcat $CATALINA_HOME/*
