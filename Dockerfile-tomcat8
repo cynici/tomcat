@@ -4,7 +4,7 @@ FROM frolvlad/alpine-java:jdk8-slim
 # /usr/tomcat/bin/setclasspath.sh
 LABEL maintainer "Cheewai Lai <cheewai.lai@gmail.com>"
 
-ARG TOMCAT_VERSION=8.5.38
+ARG TOMCAT_VERSION=8.5.40
 
 ARG GOSU_VERSION=1.11
 ARG GOSU_DOWNLOAD_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-amd64"
